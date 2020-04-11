@@ -8,6 +8,8 @@
 #include "Token.h"
 #include "TokenType.h"
 
+namespace Lox
+{
 class Scanner {
 public:
     Scanner(std::string source);
@@ -17,12 +19,13 @@ private:
     bool isAtEnd() const;
     char advance();
     bool match(char expected);
-    char peek();
-    char peekNext();
+    char peek() const;
+    char peekNext() const;
 
     void addToken(TokenType type, std::any literal);
     void addToken(TokenType type);
 
+    void comment();
     void string();
     void number();
     void identifier();
@@ -38,4 +41,5 @@ private:
     int current{0};
     int line{1};
 };
+} // end of namespace Lox
 

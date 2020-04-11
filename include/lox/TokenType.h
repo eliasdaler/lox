@@ -1,5 +1,6 @@
 #pragma once
 
+namespace Lox {
 enum class TokenType {
     // Single-character tokens.
     LeftParen,
@@ -49,4 +50,5 @@ enum class TokenType {
 
     TokenEOF
 };
+} // end of namespace Lox
 

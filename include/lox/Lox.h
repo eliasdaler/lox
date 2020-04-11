@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace Lox {
+
 class Lox {
    public:
     static void Report(int line, const std::string& where,
@@ -10,3 +12,4 @@ class Lox {
     static bool HadError;
 };
 
+} // end of namespace Lox

@@ -26,6 +26,19 @@ and then
 cmake --build . --target lox
 ```
 
+To build with tests:
+
+```sh
+# in build dir
+cmake <src-dir> -DBUILD_TESTING=ON
+```
+
+To run tests:
+
+```sh
+cmake --build . --target check
+```
+
 Usage
 ---
 

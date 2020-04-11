@@ -1,36 +1,33 @@
-#include "Scanner.h"
+#include "lox/Scanner.h"
 
-#include "Lox.h"
+#include "lox/Lox.h"
 
-namespace
+#include <cctype> // isdigit, isalpha
+
+namespace Lox
 {
-bool isDigit(char c)
-{
-    return c >= '0' && c <= '9';
-}
-
-bool isAlpha(char c)
-{
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-}
-
-bool isAlphaNumeric(char c)
-{
-    return isAlpha(c) || isDigit(c);
-}
-
-} // end of anonymous namespace
-
 Scanner::Scanner(std::string source) : source(std::move(source))
 {
+    /* clang-format off */
     keywords = {
-        {"and", TokenType::And},     {"class", TokenType::Class},   {"else", TokenType::Else},
-        {"false", TokenType::False}, {"for", TokenType::For},       {"fun", TokenType::Fun},
-        {"if", TokenType::If},       {"nil", TokenType::Nil},       {"or", TokenType::Or},
-        {"print", TokenType::Print}, {"return", TokenType::Return}, {"super", TokenType::Super},
-        {"this", TokenType::This},   {"true", TokenType::True},     {"var", TokenType::Var},
+        {"and", TokenType::And},
+        {"class", TokenType::Class},
+        {"else", TokenType::Else},
+        {"false", TokenType::False},
+        {"for", TokenType::For},
+        {"fun", TokenType::Fun},
+        {"if", TokenType::If},
+        {"nil", TokenType::Nil},
+        {"or", TokenType::Or},
+        {"print", TokenType::Print},
+        {"return", TokenType::Return},
+        {"super", TokenType::Super},
+        {"this", TokenType::This},
+        {"true", TokenType::True},
+        {"var", TokenType::Var},
         {"while", TokenType::While},
     };
+    /* clang-format on */
 }
 
 std::vector<Token> Scanner::scanTokens()
@@ -39,7 +36,7 @@ std::vector<Token> Scanner::scanTokens()
         start = current;
         scanToken();
     }
-    tokens.emplace_back(TokenType::TokenEOF, "", std::any{}, line);
+    tokens.emplace_back(TokenType::TokenEOF, "", line);
     return tokens;
 }
 
@@ -67,7 +64,7 @@ bool Scanner::match(char expected)
     return true;
 }
 
-char Scanner::peek()
+char Scanner::peek() const
 {
     if (isAtEnd()) {
         return '\0';
@@ -75,7 +72,7 @@ char Scanner::peek()
     return source.at(current);
 }
 
-char Scanner::peekNext()
+char Scanner::peekNext() const
 {
     if (current + 1 >= static_cast<int>(source.size())) {
         return '\0';
@@ -90,7 +87,15 @@ void Scanner::addToken(TokenType type, std::any literal)
 
 void Scanner::addToken(TokenType type)
 {
-    addToken(type, std::any{});
+    tokens.emplace_back(type, source.substr(start, current - start), line);
+}
+
+void Scanner::comment()
+{
+    // A comment goes until the end of the line.
+    while (peek() != '\n' && !isAtEnd()) {
+        advance();
+    }
 }
 
 void Scanner::string()
@@ -115,17 +120,18 @@ void Scanner::string()
 
 void Scanner::number()
 {
-    while (::isDigit(peek())) {
+    while (std::isdigit(peek())) {
         advance();
     }
 
     // Look for a fractional part.
-    if (peek() == '.' && ::isDigit(peekNext())) {
+    if (peek() == '.' && std::isdigit(peekNext())) {
         // Consume the "."
         advance();
 
-        while (::isDigit(peek()))
+        while (std::isdigit(peek())) {
             advance();
+        }
     }
 
     addToken(TokenType::Number, std::stod(source.substr(start, current - start)));
@@ -133,7 +139,7 @@ void Scanner::number()
 
 void Scanner::identifier()
 {
-    while (::isAlphaNumeric(peek())) {
+    while (std::isdigit(peek()) || std::isalpha(peek()) || peek() == '_') {
         advance();
     }
 
@@ -193,10 +199,7 @@ void Scanner::scanToken()
         break;
     case '/':
         if (match('/')) {
-            // A comment goes until the end of the line.
-            while (peek() != '\n' && !isAtEnd()) {
-                advance();
-            }
+            comment();
         } else {
             addToken(TokenType::Slash);
         }
@@ -214,9 +217,9 @@ void Scanner::scanToken()
         break;
 
     default:
-        if (::isDigit(c)) {
+        if (std::isdigit(c)) {
             number();
-        } else if (::isAlpha(c)) {
+        } else if (std::isalpha(c) || c == '_') {
             identifier();
         } else {
             Lox::Error(line, std::string("Unexpected character: ") + "'" + c + "'");
@@ -225,3 +228,4 @@ void Scanner::scanToken()
     }
 }
 
+} // end of namespace Lox

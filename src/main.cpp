@@ -2,12 +2,12 @@
 #include <iostream>
 #include <string>
 
-#include "Lox.h"
-#include "Scanner.h"
+#include "lox/Lox.h"
+#include "lox/Scanner.h"
 
 void run(const std::string& source)
 {
-    Scanner scanner{source};
+    Lox::Scanner scanner{source};
     const auto tokens = scanner.scanTokens();
     for (const auto& token : tokens) {
         std::cout << token.toString() << std::endl;
@@ -26,7 +26,7 @@ void runFile(const std::string& filename)
     }
 
     run(source);
-    if (Lox::HadError) {
+    if (Lox::Lox::HadError) {
         exit(2);
     }
 }
@@ -40,7 +40,7 @@ void runPrompt()
         std::cout << "> ";
         if (std::getline(std::cin, code)) {
             run(code);
-            Lox::HadError = false;
+            Lox::Lox::HadError = false;
         } else {
             std::cout << std::endl;
             break;
