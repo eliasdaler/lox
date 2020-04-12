@@ -10,8 +10,14 @@ target_include_directories(lox
 target_sources(lox
   PRIVATE
     Lox.cpp
-    Token.cpp
+    Parser.cpp
     Scanner.cpp
+    Token.cpp
+    # expressions
+    BinaryExpr.cpp
+    GroupingExpr.cpp
+    LiteralExpr.cpp
+    UnaryExpr.cpp
 )
 
 add_executable(lox_repl)

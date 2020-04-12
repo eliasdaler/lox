@@ -9,6 +9,7 @@ Chapters complete
 ---
 
 4. Scanning
+6. Parsing Expressions
 
 Building
 ---
