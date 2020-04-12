@@ -9,6 +9,7 @@ target_include_directories(lox
 
 target_sources(lox
   PRIVATE
+    Interpreter.cpp
     Lox.cpp
     Parser.cpp
     Scanner.cpp

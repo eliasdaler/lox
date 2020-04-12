@@ -13,4 +13,9 @@ BinaryExpr::BinaryExpr(std::unique_ptr<Expr> left, Token op, std::unique_ptr<Exp
     assert(this->right != nullptr);
 }
 
+std::any BinaryExpr::accept(ExprVisitor<std::any>& visitor) const
+{
+    return visitor.visitBinaryExpr(*this);
+}
+
 } // end of namespace Lox
