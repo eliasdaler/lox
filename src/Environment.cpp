@@ -25,10 +25,12 @@ void Environment::assign(const Token& name, const std::any& value)
     auto it = values.find(name.getText());
     if (it != values.end()) {
         it->second = value;
+        return;
     }
 
     if (enclosing) {
         enclosing->assign(name, value);
+        return;
     }
 
     throw RuntimeError(name, "Undefined variable '" + name.getText() + "'.");
