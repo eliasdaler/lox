@@ -7,6 +7,7 @@
 #include "lox/UnaryExpr.h"
 #include "lox/VarExpr.h"
 
+#include "lox/BlockStmt.h"
 #include "lox/ExpressionStmt.h"
 #include "lox/PrintStmt.h"
 #include "lox/VarStmt.h"
@@ -59,12 +60,29 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
-    // statement → exprStmt| printStmt ;
+    // statement → exprStmt| printStmt | block;
     if (match(TokenType::Print)) {
         return printStatement();
     }
 
+    if (match(TokenType::LeftBrace)) {
+        return block();
+    }
+
     return expressionStatement();
+}
+
+std::unique_ptr<Stmt> Parser::block()
+{
+    // block → "{" declaration* "}" ;
+    std::vector<std::unique_ptr<Stmt>> statements;
+
+    while (!check(TokenType::RightBrace) && !isAtEnd()) {
+        statements.push_back(declaration());
+    }
+
+    consume(TokenType::RightBrace, "Expect '}' after block.");
+    return std::make_unique<BlockStmt>(std::move(statements));
 }
 
 std::unique_ptr<Stmt> Parser::expressionStatement()

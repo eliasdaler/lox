@@ -2,6 +2,7 @@
 
 namespace Lox
 {
+class BlockStmt;
 class ExpressionStmt;
 class PrintStmt;
 class VarStmt;
@@ -11,6 +12,7 @@ class StmtVisitor {
 public:
     ~StmtVisitor() = default;
 
+    virtual R visitBlockStmt(const BlockStmt& stmt) = 0;
     virtual R visitExpressionStmt(const ExpressionStmt& stmt) = 0;
     virtual R visitPrintStmt(const PrintStmt& stmt) = 0;
     virtual R visitVarStmt(const VarStmt& stmt) = 0;

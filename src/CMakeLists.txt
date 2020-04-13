@@ -23,6 +23,7 @@ target_sources(lox
     UnaryExpr.cpp
     VarExpr.cpp
     # statements
+    BlockStmt.cpp
     ExpressionStmt.cpp
     PrintStmt.cpp
     VarStmt.cpp

@@ -1,5 +1,6 @@
 #include "lox/Interpreter.h"
 
+#include "lox/Environment.h"
 #include "lox/Lox.h"
 #include "lox/RuntimeError.h"
 
@@ -10,6 +11,7 @@
 #include "lox/UnaryExpr.h"
 #include "lox/VarExpr.h"
 
+#include "lox/BlockStmt.h"
 #include "lox/ExpressionStmt.h"
 #include "lox/PrintStmt.h"
 #include "lox/VarStmt.h"
@@ -49,8 +51,10 @@ std::string stringify(const std::any& object)
 
 namespace Lox
 {
-Interpreter::Interpreter(std::ostream& out) : out(out)
+Interpreter::Interpreter(std::ostream& out) : out(out), environment(std::make_unique<Environment>())
 {}
+
+Interpreter::~Interpreter() = default;
 
 void Interpreter::intepret(const std::vector<std::unique_ptr<Stmt>>& statements)
 {
@@ -67,6 +71,24 @@ void Interpreter::intepret(const std::vector<std::unique_ptr<Stmt>>& statements)
 void Interpreter::execute(const Stmt& stmt)
 {
     stmt.accept(*this);
+}
+
+void Interpreter::executeBlock(const std::vector<std::unique_ptr<Stmt>>& statements,
+                               std::unique_ptr<Environment> env)
+{
+    auto previous = std::move(environment);
+    try {
+        environment = std::move(env);
+        for (const auto& statementPtr : statements) {
+            assert(statementPtr != nullptr);
+            execute(*statementPtr);
+        }
+    } catch (RuntimeError error) {
+        environment = std::move(previous);
+        throw error;
+    }
+
+    environment = std::move(previous);
 }
 
 std::any Interpreter::evaluate(const Expr& expr)
@@ -138,7 +160,8 @@ void Interpreter::checkNumberOperands(const Token& op, const std::any& left,
 std::any Interpreter::visitAssignExpr(const AssignExpr& expr)
 {
     auto value = evaluate(expr.getValue());
-    environment.assign(expr.getName(), value);
+    assert(environment != nullptr);
+    environment->assign(expr.getName(), value);
     return value;
 }
 
@@ -217,7 +240,14 @@ std::any Interpreter::visitUnaryExpr(const UnaryExpr& expr)
 
 std::any Interpreter::visitVarExpr(const VarExpr& expr)
 {
-    return environment.get(expr.getName());
+    assert(environment != nullptr);
+    return environment->get(expr.getName());
+}
+
+std::any Interpreter::visitBlockStmt(const BlockStmt& stmt)
+{
+    executeBlock(stmt.getStatements(), std::make_unique<Environment>(environment.get()));
+    return {};
 }
 
 std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
@@ -240,7 +270,8 @@ std::any Interpreter::visitVarStmt(const VarStmt& stmt)
         value = evaluate(stmt.getInitializer());
     }
 
-    environment.define(stmt.getName().getText(), value);
+    assert(environment != nullptr);
+    environment->define(stmt.getName().getText(), value);
     return {};
 }
 
