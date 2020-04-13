@@ -16,6 +16,7 @@ target_sources(lox
     Scanner.cpp
     Token.cpp
     # expressions
+    AssignExpr.cpp
     BinaryExpr.cpp
     GroupingExpr.cpp
     LiteralExpr.cpp
@@ -28,6 +29,7 @@ target_sources(lox
 )
 
 add_executable(lox_repl)
+set_target_properties(lox_repl PROPERTIES OUTPUT_NAME "lox")
 
 target_include_directories(lox_repl
   PUBLIC

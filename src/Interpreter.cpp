@@ -3,6 +3,7 @@
 #include "lox/Lox.h"
 #include "lox/RuntimeError.h"
 
+#include "lox/AssignExpr.h"
 #include "lox/BinaryExpr.h"
 #include "lox/GroupingExpr.h"
 #include "lox/LiteralExpr.h"
@@ -132,6 +133,13 @@ void Interpreter::checkNumberOperands(const Token& op, const std::any& left,
     }
 
     throw RuntimeError(op, "Operands must be numbers");
+}
+
+std::any Interpreter::visitAssignExpr(const AssignExpr& expr)
+{
+    auto value = evaluate(expr.getValue());
+    environment.assign(expr.getName(), value);
+    return value;
 }
 
 std::any Interpreter::visitBinaryExpr(const BinaryExpr& expr)

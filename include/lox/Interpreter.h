@@ -14,6 +14,7 @@
 namespace Lox
 {
 class Expr;
+class AssignExpr;
 class BinaryExpr;
 class GroupingExpr;
 class LiteralExpr;
@@ -39,6 +40,7 @@ private:
     void checkNumberOperand(const Token& op, const std::any& operand) const;
     void checkNumberOperands(const Token& op, const std::any& left, const std::any& right) const;
 
+    std::any visitAssignExpr(const AssignExpr& expr) override;
     std::any visitBinaryExpr(const BinaryExpr& expr) override;
     std::any visitGroupingExpr(const GroupingExpr& expr) override;
     std::any visitLiteralExpr(const LiteralExpr& expr) override;

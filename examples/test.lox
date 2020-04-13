@@ -1,0 +1,7 @@
+var a; // declaration
+a = 2 * 20; // assignment
+
+var b = 2; // another declaration
+
+print "hello, world";
+print a + b;

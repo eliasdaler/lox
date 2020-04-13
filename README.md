@@ -44,6 +44,12 @@ cmake --build . --target check
 Usage
 ---
 
+Run a simple example:
+
+```sh
+lox examples/test.lox
+```
+
 TODO
 
 License

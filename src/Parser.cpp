@@ -1,5 +1,6 @@
 #include "lox/Parser.h"
 
+#include "lox/AssignExpr.h"
 #include "lox/BinaryExpr.h"
 #include "lox/GroupingExpr.h"
 #include "lox/LiteralExpr.h"
@@ -68,7 +69,7 @@ std::unique_ptr<Stmt> Parser::statement()
 
 std::unique_ptr<Stmt> Parser::expressionStatement()
 {
-    // exprStmt  → expression ";" ;
+    // exprStmt → expression ";" ;
     auto expr = expression();
     consume(TokenType::Semicolon, "Expect ';' after expression");
     return std::make_unique<ExpressionStmt>(std::move(expr));
@@ -84,15 +85,35 @@ std::unique_ptr<Stmt> Parser::printStatement()
 
 std::unique_ptr<Expr> Parser::expression()
 {
-    // expression → equality ;
-    return equality();
+    // expression → assignment ;
+    return assignment();
+}
+
+std::unique_ptr<Expr> Parser::assignment()
+{
+    // assignment → IDENTIFIER "=" assignment | equality ;
+    auto expr = equality();
+
+    if (match(TokenType::Equal)) {
+        auto equals = previous();
+        auto value = assignment();
+
+        if (auto* varExpr = dynamic_cast<VarExpr*>(expr.get()); varExpr) {
+            auto name = varExpr->getName();
+            return std::make_unique<AssignExpr>(name, std::move(value));
+        }
+
+        error(equals, "Invalid assignment target");
+    }
+
+    return expr;
 }
 
 std::unique_ptr<Expr> Parser::equality()
 {
     // equality → comparison ( ( "!=" | "==" ) comparison )* ;
     auto expr = comparison();
-    while (match(TokenType::BangEqual, TokenType::Equal)) {
+    while (match(TokenType::BangEqual, TokenType::EqualEqual)) {
         auto op = previous();
         auto right = comparison();
         expr = std::make_unique<BinaryExpr>(std::move(expr), op, std::move(right));
