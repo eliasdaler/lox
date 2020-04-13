@@ -10,44 +10,20 @@
 
 namespace
 {
-static Lox::Interpreter Interpreter;
-
-std::string stringify(const std::any& object)
-{
-    if (!object.has_value()) {
-        return "nil";
-    }
-
-    if (object.type() == typeid(bool)) {
-        return std::any_cast<bool>(object) ? "true" : "false";
-    }
-
-    if (object.type() == typeid(double)) {
-        double n = std::any_cast<double>(object);
-        if (std::trunc(n) == n) { // is int
-            return std::to_string((int)n);
-        } else {
-            return std::to_string(n); // TODO: don't print trailing zeros
-        }
-    }
-
-    if (object.type() == typeid(std::string)) {
-        return std::any_cast<std::string>(object);
-    }
-
-    return "";
-}
+static Lox::Interpreter Interpreter(std::cout);
 }
 
 void run(const std::string& source)
 {
     Lox::Scanner scanner{source};
     Lox::Parser parser{scanner.scanTokens()};
-    auto expr = parser.parse();
-    if (expr) {
-        auto value = Interpreter.intepret(*expr);
-        std::cout << ::stringify(value) << std::endl;
+    const auto statements = parser.parse();
+
+    if (Lox::Lox::HadError) {
+        return;
     }
+
+    Interpreter.intepret(statements);
 }
 
 void runFile(const std::string& filename)

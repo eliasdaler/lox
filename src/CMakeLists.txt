@@ -19,6 +19,9 @@ target_sources(lox
     GroupingExpr.cpp
     LiteralExpr.cpp
     UnaryExpr.cpp
+    # statements
+    ExpressionStmt.cpp
+    PrintStmt.cpp
 )
 
 add_executable(lox_repl)

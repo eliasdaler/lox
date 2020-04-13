@@ -13,3 +13,6 @@ Notes
 * Visitor pattern as in book doesn't work in C++ - you can't have template
   virtual methods. For now only `ExprVisitor<std::any>` is supported in expressions -
   but that's enough for now.
+
+* I don't use code generation as done in the book. Generating C++ feels
+  dangerous and incorporating it into CMake build is not easy. Maybe later?

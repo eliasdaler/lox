@@ -7,22 +7,62 @@
 #include "lox/LiteralExpr.h"
 #include "lox/UnaryExpr.h"
 
+#include "lox/ExpressionStmt.h"
+#include "lox/PrintStmt.h"
+
+#include <cassert>
 #include <cmath>
-#include <iostream>
+#include <ostream>
 
 namespace
-{} // end of anonymous namespace
+{
+std::string stringify(const std::any& object)
+{
+    if (!object.has_value()) {
+        return "nil";
+    }
+
+    if (object.type() == typeid(bool)) {
+        return std::any_cast<bool>(object) ? "true" : "false";
+    }
+
+    if (object.type() == typeid(double)) {
+        double n = std::any_cast<double>(object);
+        if (std::trunc(n) == n) { // is int
+            return std::to_string((int)n);
+        } else {
+            return std::to_string(n); // TODO: don't print trailing zeros
+        }
+    }
+
+    if (object.type() == typeid(std::string)) {
+        return std::any_cast<std::string>(object);
+    }
+
+    return "";
+}
+} // end of anonymous namespace
 
 namespace Lox
 {
-std::any Interpreter::intepret(const Expr& expr)
+Interpreter::Interpreter(std::ostream& out) : out(out)
+{}
+
+void Interpreter::intepret(const std::vector<std::unique_ptr<Stmt>>& statements)
 {
     try {
-        return evaluate(expr);
+        for (const auto& ptr : statements) {
+            assert(ptr != nullptr);
+            execute(*ptr);
+        }
     } catch (RuntimeError error) {
         Lox::ReportRuntimeError(error);
     }
-    return {};
+}
+
+void Interpreter::execute(const Stmt& stmt)
+{
+    stmt.accept(*this);
 }
 
 std::any Interpreter::evaluate(const Expr& expr)
@@ -163,6 +203,19 @@ std::any Interpreter::visitUnaryExpr(const UnaryExpr& expr)
     default:
         return std::any{}; // unreachable
     }
+}
+
+std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
+{
+    evaluate(stmt.getExpr());
+    return {};
+}
+
+std::any Interpreter::visitPrintStmt(const PrintStmt& stmt)
+{
+    auto value = evaluate(stmt.getExpr());
+    out << ::stringify(value) << std::endl;
+    return {};
 }
 
 } // end of namespace Lox

@@ -5,6 +5,9 @@
 #include "lox/LiteralExpr.h"
 #include "lox/UnaryExpr.h"
 
+#include "lox/ExpressionStmt.h"
+#include "lox/PrintStmt.h"
+
 #include "lox/Lox.h"
 
 namespace Lox
@@ -12,13 +15,40 @@ namespace Lox
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens))
 {}
 
-std::unique_ptr<Expr> Parser::parse()
+std::vector<std::unique_ptr<Stmt>> Parser::parse()
 {
-    try {
-        return expression();
-    } catch (ParseError err) {
-        return nullptr;
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!isAtEnd()) {
+        statements.push_back(statement());
     }
+
+    return statements;
+}
+
+std::unique_ptr<Stmt> Parser::statement()
+{
+    // statement → exprStmt| printStmt ;
+    if (match(TokenType::Print)) {
+        return printStatement();
+    }
+
+    return expressionStatement();
+}
+
+std::unique_ptr<Stmt> Parser::expressionStatement()
+{
+    // exprStmt  → expression ";" ;
+    auto expr = expression();
+    consume(TokenType::Semicolon, "Expect ';' after expression");
+    return std::make_unique<ExpressionStmt>(std::move(expr));
+}
+
+std::unique_ptr<Stmt> Parser::printStatement()
+{
+    // printStmt → "print" expression ";" ;
+    auto value = expression();
+    consume(TokenType::Semicolon, "Expect ';' after value");
+    return std::make_unique<PrintStmt>(std::move(value));
 }
 
 std::unique_ptr<Expr> Parser::expression()
