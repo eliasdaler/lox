@@ -1,5 +1,8 @@
 #include "lox/Lox.h"
 
+#include "lox/RuntimeError.h"
+#include "lox/Token.h"
+
 #include <iostream>
 
 namespace Lox
@@ -29,7 +32,7 @@ void Lox::Error(Token token, const std::string& message)
     HadError = true;
 }
 
-void Lox::ReportRuntimeError(const Interpreter::RuntimeError& error)
+void Lox::ReportRuntimeError(const RuntimeError& error)
 {
     std::cout << error.what() << "\n[line " << error.getToken().getLine() << "]" << std::endl;
     HadRuntimeError = true;

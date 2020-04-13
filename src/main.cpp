@@ -28,9 +28,13 @@ void run(const std::string& source)
 
 void runFile(const std::string& filename)
 {
-    std::cout << "Running file '" << filename << "'..." << std::endl;
-
     std::ifstream file{filename};
+    if (!file.good()) {
+        // TODO: write proper error message
+        std::cout << "Failed to open '" << filename << "': No such file or directory" << std::endl;
+        return;
+    }
+
     std::string line;
     std::string source;
     while (std::getline(file, line)) {

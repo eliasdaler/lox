@@ -4,18 +4,18 @@
 
 #include "Expr.h"
 #include "ExprVisitor.h"
+#include "Token.h"
 
 namespace Lox
 {
-class LiteralExpr : public Expr {
+class VarExpr : public Expr {
 public:
-    LiteralExpr(std::any literal);
+    VarExpr(Token name);
     std::any accept(ExprVisitor<std::any>& visitor) const override;
 
-    const std::any& getLiteral() const { return literal; }
-
+    const Token& getName() const { return name; }
 private:
-    std::any literal;
+    Token name;
 };
 
 } // end of namespace Lox

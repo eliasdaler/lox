@@ -1,14 +1,14 @@
 #pragma once
 
 #include <any>
-#include <memory>
-#include <stdexcept>
-#include <vector>
 #include <iosfwd>
+#include <memory>
+#include <vector>
 
 #include "ExprVisitor.h"
 #include "StmtVisitor.h"
 
+#include "Environment.h"
 #include "Token.h"
 
 namespace Lox
@@ -22,23 +22,12 @@ class UnaryExpr;
 class Stmt;
 class ExpressionStmt;
 class PrintStmt;
+class VarStmt;
 
 class Interpreter : public ExprVisitor<std::any>, public StmtVisitor<std::any> {
 public:
     Interpreter(std::ostream& out);
     void intepret(const std::vector<std::unique_ptr<Stmt>>& statements);
-
-    class RuntimeError : public std::runtime_error {
-    public:
-        RuntimeError(const Token& token, const std::string& message) :
-            std::runtime_error(message), token(token)
-        {}
-
-        const Token& getToken() const { return token; }
-
-    private:
-        Token token;
-    };
 
 private:
     void execute(const Stmt& stmt);
@@ -54,11 +43,14 @@ private:
     std::any visitGroupingExpr(const GroupingExpr& expr) override;
     std::any visitLiteralExpr(const LiteralExpr& expr) override;
     std::any visitUnaryExpr(const UnaryExpr& expr) override;
+    std::any visitVarExpr(const VarExpr& expr) override;
 
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
+    std::any visitVarStmt(const VarStmt& stmt) override;
 
     // data
+    Environment environment;
     std::ostream& out;
 };
 

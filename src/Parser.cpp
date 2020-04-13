@@ -4,9 +4,11 @@
 #include "lox/GroupingExpr.h"
 #include "lox/LiteralExpr.h"
 #include "lox/UnaryExpr.h"
+#include "lox/VarExpr.h"
 
 #include "lox/ExpressionStmt.h"
 #include "lox/PrintStmt.h"
+#include "lox/VarStmt.h"
 
 #include "lox/Lox.h"
 
@@ -17,12 +19,41 @@ Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens))
 
 std::vector<std::unique_ptr<Stmt>> Parser::parse()
 {
+    // program → declaration* EOF ;
     std::vector<std::unique_ptr<Stmt>> statements;
     while (!isAtEnd()) {
-        statements.push_back(statement());
+        statements.push_back(declaration());
     }
 
     return statements;
+}
+
+std::unique_ptr<Stmt> Parser::declaration()
+{
+    // declaration → varDecl | statement ;
+    try {
+        if (match(TokenType::Var)) {
+            return varDeclaration();
+        }
+
+        return statement();
+    } catch (ParseError error) {
+        synchronize();
+        return nullptr;
+    }
+}
+
+std::unique_ptr<Stmt> Parser::varDeclaration()
+{
+    auto name = consume(TokenType::Identifier, "Expect variable name");
+
+    std::unique_ptr<Expr> initializer;
+    if (match(TokenType::Equal)) {
+        initializer = expression();
+    }
+
+    consume(TokenType::Semicolon, "Expect ';' after variable declaration");
+    return std::make_unique<VarStmt>(name, std::move(initializer));
 }
 
 std::unique_ptr<Stmt> Parser::statement()
@@ -125,7 +156,7 @@ std::unique_ptr<Expr> Parser::unary()
 std::unique_ptr<Expr> Parser::primary()
 {
     // primary        → NUMBER | STRING | "false" | "true" | "nil"
-    //                  | "(" expression ")" ;
+    //                  IDENTIFIER | "(" expression ")" ;
     if (match(TokenType::Number, TokenType::String)) {
         return std::make_unique<LiteralExpr>(previous().getLiteral());
     }
@@ -140,6 +171,10 @@ std::unique_ptr<Expr> Parser::primary()
 
     if (match(TokenType::Nil)) {
         return std::make_unique<LiteralExpr>(std::any{});
+    }
+
+    if (match(TokenType::Identifier)) {
+        return std::make_unique<VarExpr>(previous());
     }
 
     if (match(TokenType::LeftParen)) {

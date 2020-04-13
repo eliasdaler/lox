@@ -4,7 +4,6 @@
 
 #include "Expr.h"
 #include "ExprVisitor.h"
-#include "Token.h"
 
 namespace Lox
 {

@@ -6,6 +6,7 @@ class BinaryExpr;
 class GroupingExpr;
 class LiteralExpr;
 class UnaryExpr;
+class VarExpr;
 
 template<typename R>
 class ExprVisitor {
@@ -16,6 +17,7 @@ public:
     virtual R visitGroupingExpr(const GroupingExpr& expr) = 0;
     virtual R visitLiteralExpr(const LiteralExpr& expr) = 0;
     virtual R visitUnaryExpr(const UnaryExpr& expr) = 0;
+    virtual R visitVarExpr(const VarExpr& expr) = 0;
 };
 
 } // end of namespace Lox

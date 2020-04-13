@@ -9,6 +9,7 @@ target_include_directories(lox
 
 target_sources(lox
   PRIVATE
+    Environment.cpp
     Interpreter.cpp
     Lox.cpp
     Parser.cpp
@@ -19,9 +20,11 @@ target_sources(lox
     GroupingExpr.cpp
     LiteralExpr.cpp
     UnaryExpr.cpp
+    VarExpr.cpp
     # statements
     ExpressionStmt.cpp
     PrintStmt.cpp
+    VarStmt.cpp
 )
 
 add_executable(lox_repl)

@@ -1,14 +1,17 @@
 #include "lox/Interpreter.h"
 
 #include "lox/Lox.h"
+#include "lox/RuntimeError.h"
 
 #include "lox/BinaryExpr.h"
 #include "lox/GroupingExpr.h"
 #include "lox/LiteralExpr.h"
 #include "lox/UnaryExpr.h"
+#include "lox/VarExpr.h"
 
 #include "lox/ExpressionStmt.h"
 #include "lox/PrintStmt.h"
+#include "lox/VarStmt.h"
 
 #include <cassert>
 #include <cmath>
@@ -118,7 +121,7 @@ void Interpreter::checkNumberOperand(const Token& op, const std::any& operand) c
         return;
     }
 
-    throw Interpreter::RuntimeError(op, "Operand must be a number");
+    throw RuntimeError(op, "Operand must be a number");
 }
 
 void Interpreter::checkNumberOperands(const Token& op, const std::any& left,
@@ -128,7 +131,7 @@ void Interpreter::checkNumberOperands(const Token& op, const std::any& left,
         return;
     }
 
-    throw Interpreter::RuntimeError(op, "Operands must be numbers");
+    throw RuntimeError(op, "Operands must be numbers");
 }
 
 std::any Interpreter::visitBinaryExpr(const BinaryExpr& expr)
@@ -168,8 +171,7 @@ std::any Interpreter::visitBinaryExpr(const BinaryExpr& expr)
             return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
         }
 
-        throw Interpreter::RuntimeError(expr.getOp(),
-                                        "Operands must be two numbers or two strings");
+        throw RuntimeError(expr.getOp(), "Operands must be two numbers or two strings");
     case TokenType::Slash:
         checkNumberOperands(expr.getOp(), left, right);
         return std::any_cast<double>(left) / std::any_cast<double>(right);
@@ -205,6 +207,11 @@ std::any Interpreter::visitUnaryExpr(const UnaryExpr& expr)
     }
 }
 
+std::any Interpreter::visitVarExpr(const VarExpr& expr)
+{
+    return environment.get(expr.getName());
+}
+
 std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
 {
     evaluate(stmt.getExpr());
@@ -215,6 +222,17 @@ std::any Interpreter::visitPrintStmt(const PrintStmt& stmt)
 {
     auto value = evaluate(stmt.getExpr());
     out << ::stringify(value) << std::endl;
+    return {};
+}
+
+std::any Interpreter::visitVarStmt(const VarStmt& stmt)
+{
+    std::any value;
+    if (stmt.hasInitializer()) {
+        value = evaluate(stmt.getInitializer());
+    }
+
+    environment.define(stmt.getName().getText(), value);
     return {};
 }
 

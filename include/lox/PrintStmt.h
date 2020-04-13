@@ -5,7 +5,6 @@
 #include "Expr.h"
 #include "Stmt.h"
 #include "StmtVisitor.h"
-#include "Token.h"
 
 namespace Lox
 {

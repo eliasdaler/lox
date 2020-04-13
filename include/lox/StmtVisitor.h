@@ -4,6 +4,7 @@ namespace Lox
 {
 class ExpressionStmt;
 class PrintStmt;
+class VarStmt;
 
 template<typename R>
 class StmtVisitor {
@@ -12,6 +13,7 @@ public:
 
     virtual R visitExpressionStmt(const ExpressionStmt& stmt) = 0;
     virtual R visitPrintStmt(const PrintStmt& stmt) = 0;
+    virtual R visitVarStmt(const VarStmt& stmt) = 0;
 };
 
 } // end of namespace Lox
