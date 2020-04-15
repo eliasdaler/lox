@@ -4,6 +4,7 @@
 #include "lox/BinaryExpr.h"
 #include "lox/GroupingExpr.h"
 #include "lox/LiteralExpr.h"
+#include "lox/LogicalExpr.h"
 #include "lox/UnaryExpr.h"
 #include "lox/VarExpr.h"
 
@@ -131,8 +132,8 @@ std::unique_ptr<Expr> Parser::expression()
 
 std::unique_ptr<Expr> Parser::assignment()
 {
-    // assignment → IDENTIFIER "=" assignment | equality ;
-    auto expr = equality();
+    // assignment → IDENTIFIER "=" assignment | logic_or ;
+    auto expr = orExpression();
 
     if (match(TokenType::Equal)) {
         auto equals = previous();
@@ -144,6 +145,34 @@ std::unique_ptr<Expr> Parser::assignment()
         }
 
         error(equals, "Invalid assignment target");
+    }
+
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::orExpression()
+{
+    // logic_or → logic_and ( "or" logic_and )* ;
+    auto expr = andExpression();
+
+    while (match(TokenType::Or)) {
+        auto op = previous();
+        auto right = andExpression();
+        expr = std::make_unique<LogicalExpr>(std::move(expr), op, std::move(right));
+    }
+
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::andExpression()
+{
+    // logic_and  → equality ( "and" equality )* ;
+    auto expr = equality();
+
+    while (match(TokenType::And)) {
+        auto op = previous();
+        auto right = equality();
+        expr = std::make_unique<LogicalExpr>(std::move(expr), op, std::move(right));
     }
 
     return expr;

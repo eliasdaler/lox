@@ -18,6 +18,7 @@ class Expr;
 class AssignExpr;
 class BinaryExpr;
 class GroupingExpr;
+class LogicalExpr;
 class LiteralExpr;
 class UnaryExpr;
 
@@ -49,6 +50,7 @@ private:
     std::any visitAssignExpr(const AssignExpr& expr) override;
     std::any visitBinaryExpr(const BinaryExpr& expr) override;
     std::any visitGroupingExpr(const GroupingExpr& expr) override;
+    std::any visitLogicalExpr(const LogicalExpr& expr) override;
     std::any visitLiteralExpr(const LiteralExpr& expr) override;
     std::any visitUnaryExpr(const UnaryExpr& expr) override;
     std::any visitVarExpr(const VarExpr& expr) override;

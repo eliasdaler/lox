@@ -47,6 +47,8 @@ private:
 
     std::unique_ptr<Expr> expression();
     std::unique_ptr<Expr> assignment();
+    std::unique_ptr<Expr> orExpression();
+    std::unique_ptr<Expr> andExpression();
     std::unique_ptr<Expr> equality();
     std::unique_ptr<Expr> comparison();
     std::unique_ptr<Expr> addition();

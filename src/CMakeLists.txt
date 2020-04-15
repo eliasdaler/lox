@@ -19,6 +19,7 @@ target_sources(lox
     AssignExpr.cpp
     BinaryExpr.cpp
     GroupingExpr.cpp
+    LogicalExpr.cpp
     LiteralExpr.cpp
     UnaryExpr.cpp
     VarExpr.cpp

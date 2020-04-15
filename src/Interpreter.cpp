@@ -8,6 +8,7 @@
 #include "lox/BinaryExpr.h"
 #include "lox/GroupingExpr.h"
 #include "lox/LiteralExpr.h"
+#include "lox/LogicalExpr.h"
 #include "lox/UnaryExpr.h"
 #include "lox/VarExpr.h"
 
@@ -220,6 +221,23 @@ std::any Interpreter::visitGroupingExpr(const GroupingExpr& expr)
     return evaluate(expr.getExpr());
 }
 
+std::any Interpreter::visitLogicalExpr(const LogicalExpr& expr)
+{
+    auto left = evaluate(expr.getLeftExpr());
+
+    if (expr.getOp().getType() == TokenType::Or) {
+        if (isTruthy(left)) {
+            return left;
+        }
+    } else {
+        if (!isTruthy(left)) {
+            return left;
+        }
+    }
+
+    return evaluate(expr.getRightExpr());
+}
+
 std::any Interpreter::visitLiteralExpr(const LiteralExpr& expr)
 {
     return expr.getLiteral();
@@ -260,7 +278,7 @@ std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
 std::any Interpreter::visitIfStmt(const IfStmt& stmt)
 {
     if (isTruthy(evaluate(stmt.getCondition()))) {
-            execute(stmt.getThenBranch());
+        execute(stmt.getThenBranch());
     } else {
         if (stmt.hasElseBranch()) {
             execute(stmt.getElseBranch());
