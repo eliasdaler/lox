@@ -17,6 +17,7 @@
 #include "lox/IfStmt.h"
 #include "lox/PrintStmt.h"
 #include "lox/VarStmt.h"
+#include "lox/WhileStmt.h"
 
 #include <cassert>
 #include <cmath>
@@ -303,6 +304,14 @@ std::any Interpreter::visitVarStmt(const VarStmt& stmt)
 
     assert(environment != nullptr);
     environment->define(stmt.getName().getText(), value);
+    return {};
+}
+
+std::any Interpreter::visitWhileStmt(const WhileStmt& stmt)
+{
+    while(isTruthy(evaluate(stmt.getCondition()))) {
+        execute(stmt.getBody());
+    }
     return {};
 }
 

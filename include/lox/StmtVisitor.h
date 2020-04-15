@@ -7,6 +7,7 @@ class ExpressionStmt;
 class IfStmt;
 class PrintStmt;
 class VarStmt;
+class WhileStmt;
 
 template<typename R>
 class StmtVisitor {
@@ -18,6 +19,7 @@ public:
     virtual R visitIfStmt(const IfStmt& stmt) = 0;
     virtual R visitPrintStmt(const PrintStmt& stmt) = 0;
     virtual R visitVarStmt(const VarStmt& stmt) = 0;
+    virtual R visitWhileStmt(const WhileStmt& stmt) = 0;
 };
 
 } // end of namespace Lox

@@ -28,6 +28,7 @@ class ExpressionStmt;
 class IfStmt;
 class PrintStmt;
 class VarStmt;
+class WhileStmt;
 
 class Interpreter : public ExprVisitor<std::any>, public StmtVisitor<std::any> {
 public:
@@ -60,6 +61,7 @@ private:
     std::any visitIfStmt(const IfStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
     std::any visitVarStmt(const VarStmt& stmt) override;
+    std::any visitWhileStmt(const WhileStmt& stmt) override;
 
     // data
     std::unique_ptr<Environment> environment;

@@ -13,6 +13,7 @@
 #include "lox/IfStmt.h"
 #include "lox/PrintStmt.h"
 #include "lox/VarStmt.h"
+#include "lox/WhileStmt.h"
 
 #include "lox/Lox.h"
 
@@ -62,13 +63,17 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
-    // statement → ifStmt | printStmt | block | exprStmt;
+    // statement → exprStmt | ifStmt | printStmt | whileStmt | block;
     if (match(TokenType::If)) {
         return ifStatement();
     }
 
     if (match(TokenType::Print)) {
         return printStatement();
+    }
+
+    if (match(TokenType::While)) {
+        return whileStatement();
     }
 
     if (match(TokenType::LeftBrace)) {
@@ -101,6 +106,16 @@ std::unique_ptr<Stmt> Parser::printStatement()
     auto value = expression();
     consume(TokenType::Semicolon, "Expect ';' after value");
     return std::make_unique<PrintStmt>(std::move(value));
+}
+
+std::unique_ptr<Stmt> Parser::whileStatement()
+{
+    // whileStmt → "while" "(" expression ")" statement ;
+    consume(TokenType::LeftParen, "Expect '(' after 'while'.");
+    auto condition = expression();
+    consume(TokenType::RightParen, "Expect ')' after 'while'.");
+
+    return std::make_unique<WhileStmt>(std::move(condition), statement());
 }
 
 std::unique_ptr<Stmt> Parser::block()

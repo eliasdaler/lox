@@ -29,6 +29,7 @@ target_sources(lox
     IfStmt.cpp
     PrintStmt.cpp
     VarStmt.cpp
+    WhileStmt.cpp
 )
 
 add_executable(lox_repl)
