@@ -63,7 +63,11 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
-    // statement → exprStmt | ifStmt | printStmt | whileStmt | block;
+    // statement → exprStmt | forStmt | ifStmt | printStmt | whileStmt | block;
+    if (match(TokenType::For)) {
+        return forStatement();
+    }
+
     if (match(TokenType::If)) {
         return ifStatement();
     }
@@ -81,6 +85,67 @@ std::unique_ptr<Stmt> Parser::statement()
     }
 
     return expressionStatement();
+}
+
+std::unique_ptr<Stmt> Parser::forStatement()
+{
+    // forStmt → "for" "(" ( varDecl | exprStmt | ";" )
+    //           expression? ";"
+    //           expression? ")" statement ;
+    consume(TokenType::LeftParen, "Expect '(' after 'for'.");
+
+    std::unique_ptr<Stmt> initializer;
+    if (match(TokenType::Semicolon)) {
+        initializer = nullptr;
+    } else if (match(TokenType::Var)) {
+        initializer = varDeclaration();
+    } else {
+        initializer = expressionStatement();
+    }
+
+    std::unique_ptr<Expr> condition;
+    if (!check(TokenType::Semicolon)) {
+        condition = expression();
+    }
+    consume(TokenType::Semicolon, "Expect ';' after loop condition.");
+
+    std::unique_ptr<Expr> increment;
+    if (!check(TokenType::RightParen)) {
+        increment = expression();
+    }
+    consume(TokenType::RightParen, "Expect ')' after for clauses.");
+
+    auto body = statement();
+
+    // for (<init>; <cond>; <iter>) <body> is equvivalent to:
+    //
+    //     <init>
+    //     while (<cond>) {
+    //         <body>
+    //         <iter>
+    //      }
+
+    // increment is executed after body on each iteration
+    if (increment) {
+        std::vector<std::unique_ptr<Stmt>> statements;
+        statements.push_back(std::move(body));
+        statements.push_back(std::make_unique<ExpressionStmt>(std::move(increment)));
+        body = std::make_unique<BlockStmt>(std::move(statements));
+    }
+
+    if (!condition) {
+        condition = std::make_unique<LiteralExpr>(true);
+    }
+    body = std::make_unique<WhileStmt>(std::move(condition), std::move(body));
+
+    if (initializer) {
+        std::vector<std::unique_ptr<Stmt>> statements;
+        statements.push_back(std::move(initializer));
+        statements.push_back(std::move(body));
+        body = std::make_unique<BlockStmt>(std::move(statements));
+    }
+
+    return body;
 }
 
 std::unique_ptr<Stmt> Parser::ifStatement()
