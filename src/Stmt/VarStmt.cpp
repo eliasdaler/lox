@@ -1,4 +1,4 @@
-#include "lox/VarStmt.h"
+#include "lox/Stmt/VarStmt.h"
 
 #include <cassert>
 

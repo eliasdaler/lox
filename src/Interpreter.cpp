@@ -4,20 +4,20 @@
 #include "lox/Lox.h"
 #include "lox/RuntimeError.h"
 
-#include "lox/AssignExpr.h"
-#include "lox/BinaryExpr.h"
-#include "lox/GroupingExpr.h"
-#include "lox/LiteralExpr.h"
-#include "lox/LogicalExpr.h"
-#include "lox/UnaryExpr.h"
-#include "lox/VarExpr.h"
+#include "lox/Expr/AssignExpr.h"
+#include "lox/Expr/BinaryExpr.h"
+#include "lox/Expr/GroupingExpr.h"
+#include "lox/Expr/LiteralExpr.h"
+#include "lox/Expr/LogicalExpr.h"
+#include "lox/Expr/UnaryExpr.h"
+#include "lox/Expr/VarExpr.h"
 
-#include "lox/BlockStmt.h"
-#include "lox/ExpressionStmt.h"
-#include "lox/IfStmt.h"
-#include "lox/PrintStmt.h"
-#include "lox/VarStmt.h"
-#include "lox/WhileStmt.h"
+#include "lox/Stmt/BlockStmt.h"
+#include "lox/Stmt/ExpressionStmt.h"
+#include "lox/Stmt/IfStmt.h"
+#include "lox/Stmt/PrintStmt.h"
+#include "lox/Stmt/VarStmt.h"
+#include "lox/Stmt/WhileStmt.h"
 
 #include <cassert>
 #include <cmath>

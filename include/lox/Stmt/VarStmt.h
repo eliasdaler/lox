@@ -2,10 +2,11 @@
 
 #include <memory>
 
-#include "Expr.h"
 #include "Stmt.h"
 #include "StmtVisitor.h"
-#include "Token.h"
+
+#include "lox/Expr/Expr.h"
+#include "lox/Token.h"
 
 namespace Lox
 {
@@ -15,7 +16,6 @@ public:
     std::any accept(StmtVisitor<std::any>& visitor) const override;
 
     const Token& getName() const { return name; }
-
 
     bool hasInitializer() const { return expr != nullptr; }
     const Expr& getInitializer() const { return *expr; }

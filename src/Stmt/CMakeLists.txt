@@ -1,0 +1,9 @@
+target_sources(lox
+  PUBLIC
+    BlockStmt.cpp
+    ExpressionStmt.cpp
+    IfStmt.cpp
+    PrintStmt.cpp
+    VarStmt.cpp
+    WhileStmt.cpp
+)

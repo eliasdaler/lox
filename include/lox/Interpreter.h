@@ -5,8 +5,8 @@
 #include <memory>
 #include <vector>
 
-#include "ExprVisitor.h"
-#include "StmtVisitor.h"
+#include "Expr/ExprVisitor.h"
+#include "Stmt/StmtVisitor.h"
 
 #include "Token.h"
 

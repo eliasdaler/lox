@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lox/ExprVisitor.h"
+#include "lox/Expr/ExprVisitor.h"
 
 #include <any>
 

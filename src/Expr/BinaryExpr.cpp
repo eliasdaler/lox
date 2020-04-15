@@ -1,4 +1,4 @@
-#include "lox/BinaryExpr.h"
+#include "lox/Expr/BinaryExpr.h"
 
 #include <cassert>
 

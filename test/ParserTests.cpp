@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "lox/BinaryExpr.h"
-#include "lox/ExpressionStmt.h"
+#include "lox/Expr/BinaryExpr.h"
 #include "lox/Parser.h"
 #include "lox/Scanner.h"
-#include "lox/Stmt.h"
+#include "lox/Stmt/Stmt.h"
+#include "lox/Stmt/ExpressionStmt.h"
 
 using namespace Lox;
 

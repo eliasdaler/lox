@@ -1,4 +1,4 @@
-#include "lox/LiteralExpr.h"
+#include "lox/Expr/LiteralExpr.h"
 
 namespace Lox
 {

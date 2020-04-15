@@ -2,9 +2,10 @@
 
 #include <memory>
 
-#include "Expr.h"
 #include "StmtVisitor.h"
 #include "Stmt.h"
+
+#include "lox/Expr/Expr.h"
 
 namespace Lox
 {

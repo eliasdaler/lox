@@ -7,29 +7,17 @@ target_include_directories(lox
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_subdirectory(Expr)
+add_subdirectory(Stmt)
+
 target_sources(lox
-  PRIVATE
+  PUBLIC
     Environment.cpp
     Interpreter.cpp
     Lox.cpp
     Parser.cpp
     Scanner.cpp
     Token.cpp
-    # expressions
-    AssignExpr.cpp
-    BinaryExpr.cpp
-    GroupingExpr.cpp
-    LogicalExpr.cpp
-    LiteralExpr.cpp
-    UnaryExpr.cpp
-    VarExpr.cpp
-    # statements
-    BlockStmt.cpp
-    ExpressionStmt.cpp
-    IfStmt.cpp
-    PrintStmt.cpp
-    VarStmt.cpp
-    WhileStmt.cpp
 )
 
 add_executable(lox_repl)

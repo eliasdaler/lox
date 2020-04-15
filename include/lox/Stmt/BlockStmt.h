@@ -3,9 +3,10 @@
 #include <memory>
 #include <vector>
 
-#include "Expr.h"
 #include "Stmt.h"
 #include "StmtVisitor.h"
+
+#include "lox/Expr/Expr.h"
 
 namespace Lox
 {

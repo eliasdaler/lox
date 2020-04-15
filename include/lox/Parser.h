@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <vector>
 
-#include "Expr.h"
-#include "Stmt.h"
+#include "Expr/Expr.h"
+#include "Stmt/Stmt.h"
 #include "Token.h"
 
 namespace Lox

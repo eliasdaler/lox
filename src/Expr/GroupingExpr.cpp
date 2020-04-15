@@ -1,4 +1,4 @@
-#include "lox/GroupingExpr.h"
+#include "lox/Expr/GroupingExpr.h"
 
 #include <cassert>
 

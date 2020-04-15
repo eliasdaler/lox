@@ -1,4 +1,4 @@
-#include "lox/BlockStmt.h"
+#include "lox/Stmt/BlockStmt.h"
 
 #include <cassert>
 

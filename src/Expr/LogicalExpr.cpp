@@ -1,4 +1,4 @@
-#include "lox/LogicalExpr.h"
+#include "lox/Expr/LogicalExpr.h"
 
 #include <cassert>
 

@@ -1,0 +1,10 @@
+target_sources(lox
+  PUBLIC
+    AssignExpr.cpp
+    BinaryExpr.cpp
+    GroupingExpr.cpp
+    LogicalExpr.cpp
+    LiteralExpr.cpp
+    UnaryExpr.cpp
+    VarExpr.cpp
+)

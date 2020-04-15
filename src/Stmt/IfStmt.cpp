@@ -1,4 +1,4 @@
-#include "lox/IfStmt.h"
+#include "lox/Stmt/IfStmt.h"
 
 #include <cassert>
 

@@ -1,4 +1,4 @@
-#include "lox/WhileStmt.h"
+#include "lox/Stmt/WhileStmt.h"
 
 #include <cassert>
 
