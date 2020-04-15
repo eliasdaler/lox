@@ -12,6 +12,7 @@ Chapters complete
 6. Parsing Expressions
 7. Evaluating Expressions
 8. Statements and State
+9. Control flow
 
 Building
 ---
