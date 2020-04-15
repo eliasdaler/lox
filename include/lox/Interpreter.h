@@ -24,9 +24,9 @@ class UnaryExpr;
 class Stmt;
 class BlockStmt;
 class ExpressionStmt;
+class IfStmt;
 class PrintStmt;
 class VarStmt;
-
 
 class Interpreter : public ExprVisitor<std::any>, public StmtVisitor<std::any> {
 public:
@@ -55,6 +55,7 @@ private:
 
     std::any visitBlockStmt(const BlockStmt& stmt) override;
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
+    std::any visitIfStmt(const IfStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
     std::any visitVarStmt(const VarStmt& stmt) override;
 

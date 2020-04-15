@@ -25,6 +25,7 @@ target_sources(lox
     # statements
     BlockStmt.cpp
     ExpressionStmt.cpp
+    IfStmt.cpp
     PrintStmt.cpp
     VarStmt.cpp
 )

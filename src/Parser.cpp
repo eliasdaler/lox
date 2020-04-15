@@ -9,6 +9,7 @@
 
 #include "lox/BlockStmt.h"
 #include "lox/ExpressionStmt.h"
+#include "lox/IfStmt.h"
 #include "lox/PrintStmt.h"
 #include "lox/VarStmt.h"
 
@@ -60,7 +61,11 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
-    // statement → exprStmt| printStmt | block;
+    // statement → ifStmt | printStmt | block | exprStmt;
+    if (match(TokenType::If)) {
+        return ifStatement();
+    }
+
     if (match(TokenType::Print)) {
         return printStatement();
     }
@@ -70,6 +75,31 @@ std::unique_ptr<Stmt> Parser::statement()
     }
 
     return expressionStatement();
+}
+
+std::unique_ptr<Stmt> Parser::ifStatement()
+{
+    // ifStmt → "if" "(" expression ")" statement ( "else" statement )? ;
+    consume(TokenType::LeftParen, "Expect '(' after 'if'.");
+    auto condition = expression();
+    consume(TokenType::RightParen, "Expect ')' after 'if'.");
+
+    auto thenBranch = statement();
+    std::unique_ptr<Stmt> elseBranch;
+    if (match(TokenType::Else)) {
+        elseBranch = statement();
+    }
+
+    return std::make_unique<IfStmt>(std::move(condition), std::move(thenBranch),
+                                    std::move(elseBranch));
+}
+
+std::unique_ptr<Stmt> Parser::printStatement()
+{
+    // printStmt → "print" expression ";" ;
+    auto value = expression();
+    consume(TokenType::Semicolon, "Expect ';' after value");
+    return std::make_unique<PrintStmt>(std::move(value));
 }
 
 std::unique_ptr<Stmt> Parser::block()
@@ -91,14 +121,6 @@ std::unique_ptr<Stmt> Parser::expressionStatement()
     auto expr = expression();
     consume(TokenType::Semicolon, "Expect ';' after expression");
     return std::make_unique<ExpressionStmt>(std::move(expr));
-}
-
-std::unique_ptr<Stmt> Parser::printStatement()
-{
-    // printStmt → "print" expression ";" ;
-    auto value = expression();
-    consume(TokenType::Semicolon, "Expect ';' after value");
-    return std::make_unique<PrintStmt>(std::move(value));
 }
 
 std::unique_ptr<Expr> Parser::expression()

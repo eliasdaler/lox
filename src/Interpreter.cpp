@@ -13,6 +13,7 @@
 
 #include "lox/BlockStmt.h"
 #include "lox/ExpressionStmt.h"
+#include "lox/IfStmt.h"
 #include "lox/PrintStmt.h"
 #include "lox/VarStmt.h"
 
@@ -253,6 +254,18 @@ std::any Interpreter::visitBlockStmt(const BlockStmt& stmt)
 std::any Interpreter::visitExpressionStmt(const ExpressionStmt& stmt)
 {
     evaluate(stmt.getExpr());
+    return {};
+}
+
+std::any Interpreter::visitIfStmt(const IfStmt& stmt)
+{
+    if (isTruthy(evaluate(stmt.getCondition()))) {
+            execute(stmt.getThenBranch());
+    } else {
+        if (stmt.hasElseBranch()) {
+            execute(stmt.getElseBranch());
+        }
+    }
     return {};
 }
 
