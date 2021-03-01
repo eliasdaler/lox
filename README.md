@@ -43,6 +43,12 @@ To run tests:
 cmake --build . --target check
 ```
 
+Alternatively:
+
+```sh
+ctest .
+```
+
 Usage
 ---
 
