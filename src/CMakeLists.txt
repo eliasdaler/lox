@@ -7,6 +7,11 @@ target_include_directories(lox
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_link_libraries(lox
+  PUBLIC
+    fmt::fmt
+)
+
 add_subdirectory(Expr)
 add_subdirectory(Stmt)
 

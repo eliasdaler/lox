@@ -5,6 +5,8 @@
 
 #include <cassert>
 
+#include <fmt/core.h>
+
 namespace Lox
 {
 Environment::Environment() : enclosing(nullptr)
@@ -33,7 +35,7 @@ void Environment::assign(const Token& name, const std::any& value)
         return;
     }
 
-    throw RuntimeError(name, "Undefined variable '" + name.getText() + "'.");
+    throw RuntimeError(name, fmt::format("Undefined variable '{}'", name.getText()));
 }
 
 const std::any& Environment::get(const Token& name) const
@@ -47,7 +49,7 @@ const std::any& Environment::get(const Token& name) const
         return enclosing->get(name);
     }
 
-    throw RuntimeError(name, "Undefined variable '" + name.getText() + "'.");
+    throw RuntimeError(name, fmt::format("Undefined variable '{}'", name.getText()));
 }
 
 } // namespace Lox

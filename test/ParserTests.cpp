@@ -3,8 +3,8 @@
 #include "lox/Expr/BinaryExpr.h"
 #include "lox/Parser.h"
 #include "lox/Scanner.h"
-#include "lox/Stmt/Stmt.h"
 #include "lox/Stmt/ExpressionStmt.h"
+#include "lox/Stmt/Stmt.h"
 
 using namespace Lox;
 

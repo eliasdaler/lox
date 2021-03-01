@@ -1,4 +1,4 @@
-print "Testing for...";
+print "Testing for-loops...";
 for (var i = 2; i < 20; i = i + 3) {
     print i;
 }

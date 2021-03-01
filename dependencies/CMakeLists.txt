@@ -16,6 +16,9 @@ endfunction()
 message(STATUS "Fetching third party libraries")
 option(LINK_DEPS_STATIC CACHE ON)
 
+set(FMT_VERSION 7.1.3)
+set(GOOGLETEST_VERSION 1.10)
+
 if (NOT LINK_DEPS_STATIC)
   set(BUILD_SHARED_LIBS ON)
 else()
@@ -25,6 +28,12 @@ endif()
 #=====================================
 # FetchContent declarations
 #=====================================
+
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY "https://github.com/fmtlib/fmt"
+  GIT_TAG 7bdf0628b1276379886c7f6dda2cef2b3b374f0b # 7.1.3
+)
 
 if(BUILD_TESTING)
   FetchContent_Declare(
@@ -36,6 +45,7 @@ endif()
 
 #=====================================
 
+add_subdirectory(fmt)
 if(BUILD_TESTING)
   add_subdirectory(googletest)
 endif()

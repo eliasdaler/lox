@@ -4,6 +4,8 @@
 
 #include <cctype> // isdigit, isalpha
 
+#include <fmt/core.h>
+
 namespace Lox
 {
 Scanner::Scanner(std::string source) : source(std::move(source))
@@ -222,7 +224,7 @@ void Scanner::scanToken()
         } else if (std::isalpha(c) || c == '_') {
             identifier();
         } else {
-            Lox::Error(line, std::string("Unexpected character: ") + "'" + c + "'");
+            Lox::Error(line, fmt::format("Unexpected character: '{}'", c));
         }
         break;
     }

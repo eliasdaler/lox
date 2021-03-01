@@ -23,6 +23,8 @@
 #include <cmath>
 #include <ostream>
 
+#include <fmt/ostream.h>
+
 namespace
 {
 std::string stringify(const std::any& object)
@@ -291,7 +293,7 @@ std::any Interpreter::visitIfStmt(const IfStmt& stmt)
 std::any Interpreter::visitPrintStmt(const PrintStmt& stmt)
 {
     auto value = evaluate(stmt.getExpr());
-    out << ::stringify(value) << std::endl;
+    fmt::print(out, "{}\n", stringify(value));
     return {};
 }
 
@@ -309,7 +311,7 @@ std::any Interpreter::visitVarStmt(const VarStmt& stmt)
 
 std::any Interpreter::visitWhileStmt(const WhileStmt& stmt)
 {
-    while(isTruthy(evaluate(stmt.getCondition()))) {
+    while (isTruthy(evaluate(stmt.getCondition()))) {
         execute(stmt.getBody());
     }
     return {};

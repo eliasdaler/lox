@@ -3,10 +3,15 @@
 #include <iostream>
 #include <string>
 
+#include <fmt/core.h>
+
 #include "lox/Interpreter.h"
 #include "lox/Lox.h"
 #include "lox/Parser.h"
 #include "lox/Scanner.h"
+
+// TODO: add CMake generated header for version
+#define LOX_VERSION "0.0.1"
 
 namespace
 {
@@ -31,7 +36,7 @@ void runFile(const std::string& filename)
     std::ifstream file{filename};
     if (!file.good()) {
         // TODO: write proper error message
-        std::cout << "Failed to open '" << filename << "': No such file or directory" << std::endl;
+        fmt::print("Failed to open {}: No such file or directory\n", filename);
         return;
     }
 
@@ -52,16 +57,16 @@ void runFile(const std::string& filename)
 
 void runPrompt()
 {
-    std::cout << "lox v0.0.1" << std::endl;
+    fmt::print("lox v{}\n", LOX_VERSION);
 
     std::string code;
     while (true) {
-        std::cout << "> ";
+        fmt::print("> ");
         if (std::getline(std::cin, code)) {
             run(code);
             Lox::Lox::HadError = false;
         } else {
-            std::cout << std::endl;
+            fmt::print("\n");
             break;
         }
     }
@@ -70,7 +75,7 @@ void runPrompt()
 int main(int args, char* argv[])
 {
     if (args > 2) {
-        std::cout << "usage: lox [script]" << std::endl;
+        fmt::print("usage: lox [script]\n");
         exit(1);
     } else if (args == 2) {
         runFile(argv[1]);
