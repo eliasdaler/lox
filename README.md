@@ -9,6 +9,7 @@ Chapters complete
 ---
 
 4. Scanning
+5. Represening code
 6. Parsing Expressions
 7. Evaluating Expressions
 8. Statements and State
