@@ -13,6 +13,7 @@ Chapters complete
 7. Evaluating Expressions
 8. Statements and State
 9. Control flow
+10. Functions (**in progress**)
 
 Building
 ---

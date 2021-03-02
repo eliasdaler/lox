@@ -17,6 +17,7 @@ class Environment;
 class Expr;
 class AssignExpr;
 class BinaryExpr;
+class CallExpr;
 class GroupingExpr;
 class LogicalExpr;
 class LiteralExpr;
@@ -50,6 +51,7 @@ private:
 
     std::any visitAssignExpr(const AssignExpr& expr) override;
     std::any visitBinaryExpr(const BinaryExpr& expr) override;
+    std::any visitCallExpr(const CallExpr& expr) override;
     std::any visitGroupingExpr(const GroupingExpr& expr) override;
     std::any visitLogicalExpr(const LogicalExpr& expr) override;
     std::any visitLiteralExpr(const LiteralExpr& expr) override;
@@ -64,7 +66,8 @@ private:
     std::any visitWhileStmt(const WhileStmt& stmt) override;
 
     // data
-    std::unique_ptr<Environment> environment;
+    std::unique_ptr<Environment> globals;
+    std::unique_ptr<Environment> environment; // current environment
     std::ostream& out;
 };
 

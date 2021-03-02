@@ -17,6 +17,7 @@ add_subdirectory(Stmt)
 
 target_sources(lox
   PUBLIC
+    Callable.cpp
     Environment.cpp
     Interpreter.cpp
     Lox.cpp

@@ -1,0 +1,2 @@
+print "Current Unix time in seconds is: ";
+print clock(); // can't cast numbers to strings for now

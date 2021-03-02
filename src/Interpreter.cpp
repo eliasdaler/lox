@@ -1,11 +1,13 @@
 #include "lox/Interpreter.h"
 
+#include "lox/Callable.h"
 #include "lox/Environment.h"
 #include "lox/Lox.h"
 #include "lox/RuntimeError.h"
 
 #include "lox/Expr/AssignExpr.h"
 #include "lox/Expr/BinaryExpr.h"
+#include "lox/Expr/CallExpr.h"
 #include "lox/Expr/GroupingExpr.h"
 #include "lox/Expr/LiteralExpr.h"
 #include "lox/Expr/LogicalExpr.h"
@@ -19,8 +21,10 @@
 #include "lox/Stmt/VarStmt.h"
 #include "lox/Stmt/WhileStmt.h"
 
+#include <any>
 #include <cassert>
 #include <cmath>
+#include <ctime>
 #include <ostream>
 
 #include <fmt/ostream.h>
@@ -56,8 +60,18 @@ std::string stringify(const std::any& object)
 
 namespace Lox
 {
-Interpreter::Interpreter(std::ostream& out) : out(out), environment(std::make_unique<Environment>())
-{}
+// returns Unix time in seconds
+std::any clock(Interpreter&, const std::vector<std::any>&)
+{
+    std::time_t t = std::time(nullptr);
+    return static_cast<double>(t);
+}
+
+Interpreter::Interpreter(std::ostream& out) : out(out), globals(std::make_unique<Environment>())
+{
+    globals->define("clock", Callable{0, &clock});
+    environment = std::move(globals);
+}
 
 Interpreter::~Interpreter() = default;
 
@@ -217,6 +231,28 @@ std::any Interpreter::visitBinaryExpr(const BinaryExpr& expr)
     default:
         return std::any{}; // unreachable
     }
+}
+
+std::any Interpreter::visitCallExpr(const CallExpr& expr)
+{
+    auto callee = evaluate(expr.getCallee());
+
+    std::vector<std::any> arguments;
+    for (const auto& argument : expr.getArgruments()) {
+        arguments.emplace_back(evaluate(*argument));
+    }
+
+    if (callee.type() != typeid(Callable)) {
+        throw RuntimeError(expr.getParen(), "Can only call functions and classes.");
+    }
+
+    auto function = std::any_cast<Callable>(callee);
+    if (arguments.size() != function.getArity()) {
+        throw RuntimeError(expr.getParen(), fmt::format("Expected {} arguments, but got {}.",
+                                                        function.getArity(), arguments.size()));
+    }
+
+    return function.call(*this, arguments);
 }
 
 std::any Interpreter::visitGroupingExpr(const GroupingExpr& expr)

@@ -2,6 +2,7 @@ target_sources(lox
   PUBLIC
     AssignExpr.cpp
     BinaryExpr.cpp
+    CallExpr.cpp
     GroupingExpr.cpp
     LogicalExpr.cpp
     LiteralExpr.cpp

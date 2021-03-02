@@ -2,6 +2,7 @@
 
 #include "lox/Expr/AssignExpr.h"
 #include "lox/Expr/BinaryExpr.h"
+#include "lox/Expr/CallExpr.h"
 #include "lox/Expr/GroupingExpr.h"
 #include "lox/Expr/LiteralExpr.h"
 #include "lox/Expr/LogicalExpr.h"
@@ -17,8 +18,14 @@
 
 #include "lox/Lox.h"
 
+#include <fmt/core.h>
+
+#include <memory>
+
 namespace Lox
 {
+constexpr int MAX_FUNCTION_ARGUMENTS = 255;
+
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens))
 {}
 
@@ -313,14 +320,47 @@ std::unique_ptr<Expr> Parser::multiplication()
 
 std::unique_ptr<Expr> Parser::unary()
 {
-    // unary → ( "!" | "-" ) unary | primary ;
+    // unary → ( "!" | "-" ) unary | call;
     if (match(TokenType::Bang, TokenType::Minus)) {
         auto op = previous();
         auto right = unary();
         return std::make_unique<UnaryExpr>(op, std::move(right));
     }
 
-    return primary();
+    return call();
+}
+
+std::unique_ptr<Expr> Parser::call()
+{
+    // call → primary ( "(" arguments? ")" )* ;
+    auto expr = primary();
+    while (true) {
+        if (match(TokenType::LeftParen)) {
+            expr = finishCall(std::move(expr));
+        } else {
+            break;
+        }
+    }
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::finishCall(std::unique_ptr<Expr> callee)
+{
+    std::vector<std::unique_ptr<Expr>> arguments;
+
+    if (!check(TokenType::RightParen)) {
+        do {
+            if (arguments.size() >= MAX_FUNCTION_ARGUMENTS) {
+                static const auto errMsg =
+                    fmt::format("Can't have more than {} arguments", MAX_FUNCTION_ARGUMENTS);
+                error(peek(), errMsg.c_str());
+            }
+            arguments.emplace_back(expression());
+        } while (match(TokenType::Comma));
+    }
+
+    auto paren = consume(TokenType::RightParen, "Expect ')' after the arguments.");
+    return std::make_unique<CallExpr>(std::move(callee), paren, std::move(arguments));
 }
 
 std::unique_ptr<Expr> Parser::primary()
