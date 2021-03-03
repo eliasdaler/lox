@@ -14,6 +14,7 @@
 #include "lox/Stmt/FunctionStmt.h"
 #include "lox/Stmt/IfStmt.h"
 #include "lox/Stmt/PrintStmt.h"
+#include "lox/Stmt/ReturnStmt.h"
 #include "lox/Stmt/VarStmt.h"
 #include "lox/Stmt/WhileStmt.h"
 
@@ -108,7 +109,13 @@ std::unique_ptr<Stmt> Parser::function(const std::string& kind)
 
 std::unique_ptr<Stmt> Parser::statement()
 {
-    // statement → exprStmt | forStmt | ifStmt | printStmt | whileStmt | block;
+    // statement → exprStmt
+    //             | forStmt
+    //             | ifStmt
+    //             | printStmt
+    //             | returnStmt
+    //             | whileStmt
+    //             | block;
     if (match(TokenType::For)) {
         return forStatement();
     }
@@ -119,6 +126,10 @@ std::unique_ptr<Stmt> Parser::statement()
 
     if (match(TokenType::Print)) {
         return printStatement();
+    }
+
+    if (match(TokenType::Return)) {
+        return returnStatement();
     }
 
     if (match(TokenType::While)) {
@@ -218,6 +229,19 @@ std::unique_ptr<Stmt> Parser::printStatement()
     return std::make_unique<PrintStmt>(std::move(value));
 }
 
+std::unique_ptr<Stmt> Parser::returnStatement()
+{
+    // returnStmt → "return" expression? ";" ;
+    auto keyword = previous();
+    std::unique_ptr<Expr> value;
+    if (!check(TokenType::Semicolon)) {
+        value = expression();
+    }
+
+    consume(TokenType::Semicolon, "Expect ';' after return value");
+    return std::make_unique<ReturnStmt>(std::move(keyword), std::move(value));
+}
+
 std::unique_ptr<Stmt> Parser::whileStatement()
 {
     // whileStmt → "while" "(" expression ")" statement ;
@@ -265,8 +289,7 @@ std::unique_ptr<Expr> Parser::assignment()
         auto value = assignment();
 
         if (auto* varExpr = dynamic_cast<VarExpr*>(expr.get()); varExpr) {
-            auto name = varExpr->getName();
-            return std::make_unique<AssignExpr>(name, std::move(value));
+            return std::make_unique<AssignExpr>(varExpr->getName(), std::move(value));
         }
 
         error(equals, "Invalid assignment target");

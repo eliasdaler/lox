@@ -17,8 +17,9 @@ public:
     Callable(int arity, FuncType f); // Callbale
     Callable(const FunctionStmt* declaration); // LoxFunction
 
-    int getArity() const;
     std::any call(Interpreter& intepreter, const std::vector<std::any>& arguments) const;
+
+    int getArity() const { return arity; }
 
 private:
     int arity;

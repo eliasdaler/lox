@@ -15,24 +15,10 @@ namespace Lox
 class Environment;
 
 class Expr;
-class AssignExpr;
-class BinaryExpr;
-class CallExpr;
-class GroupingExpr;
-class LogicalExpr;
-class LiteralExpr;
-class UnaryExpr;
-
 class Stmt;
-class BlockStmt;
-class ExpressionStmt;
-class IfStmt;
-class FunctionStmt;
-class PrintStmt;
-class VarStmt;
-class WhileStmt;
 
 class Interpreter : public ExprVisitor<std::any>, public StmtVisitor<std::any> {
+public:
 public:
     Interpreter(std::ostream& out);
     ~Interpreter(); // for forward declaration of Environment
@@ -66,6 +52,7 @@ private:
     std::any visitIfStmt(const IfStmt& stmt) override;
     std::any visitFunctionStmt(const FunctionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
+    std::any visitReturnStmt(const ReturnStmt& stmt) override;
     std::any visitVarStmt(const VarStmt& stmt) override;
     std::any visitWhileStmt(const WhileStmt& stmt) override;
 
@@ -73,6 +60,17 @@ private:
     std::unique_ptr<Environment> globals;
     Environment* globalEnvironment;
     std::unique_ptr<Environment> environment; // current environment
+
+    class EnterEnviromentGuard {
+    public:
+        EnterEnviromentGuard(Interpreter& i, std::unique_ptr<Environment> env);
+        ~EnterEnviromentGuard();
+
+    private:
+        Interpreter& i;
+        std::unique_ptr<Environment> previous;
+    };
+
     std::ostream& out;
 };
 

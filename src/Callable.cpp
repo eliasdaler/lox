@@ -2,6 +2,7 @@
 
 #include "lox/Environment.h"
 #include "lox/Interpreter.h"
+#include "lox/ReturnException.h"
 #include "lox/Stmt/FunctionStmt.h"
 
 #include <cassert>
@@ -15,11 +16,6 @@ Callable::Callable(const FunctionStmt* declaration) : declaration(declaration)
 {
     assert(declaration);
     arity = static_cast<int>(declaration->getParams().size());
-}
-
-int Callable::getArity() const
-{
-    return arity;
 }
 
 std::any Callable::call(Interpreter& intepreter, const std::vector<std::any>& arguments) const
@@ -39,7 +35,11 @@ std::any Callable::call(Interpreter& intepreter, const std::vector<std::any>& ar
         env->define(params.at(i).getText(), arguments.at(i));
     }
 
-    intepreter.executeBlock(declaration->getBody(), std::move(env));
+    try {
+        intepreter.executeBlock(declaration->getBody(), std::move(env));
+    } catch (const ReturnException& v) {
+        return v.getValue();
+    }
 
     return std::any{};
 }

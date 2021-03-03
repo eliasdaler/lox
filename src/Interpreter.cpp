@@ -1,8 +1,10 @@
 #include "lox/Interpreter.h"
 
+#include "fmt/core.h"
 #include "lox/Callable.h"
 #include "lox/Environment.h"
 #include "lox/Lox.h"
+#include "lox/ReturnException.h"
 #include "lox/RuntimeError.h"
 
 #include "lox/Expr/AssignExpr.h"
@@ -19,6 +21,7 @@
 #include "lox/Stmt/FunctionStmt.h"
 #include "lox/Stmt/IfStmt.h"
 #include "lox/Stmt/PrintStmt.h"
+#include "lox/Stmt/ReturnStmt.h"
 #include "lox/Stmt/VarStmt.h"
 #include "lox/Stmt/WhileStmt.h"
 
@@ -104,19 +107,11 @@ void Interpreter::execute(const Stmt& stmt)
 void Interpreter::executeBlock(const std::vector<std::unique_ptr<Stmt>>& statements,
                                std::unique_ptr<Environment> env)
 {
-    auto previous = std::move(environment);
-    try {
-        environment = std::move(env);
-        for (const auto& statementPtr : statements) {
-            assert(statementPtr != nullptr);
-            execute(*statementPtr);
-        }
-    } catch (RuntimeError error) {
-        environment = std::move(previous);
-        throw error;
+    EnterEnviromentGuard ee{*this, std::move(env)};
+    for (const auto& statementPtr : statements) {
+        assert(statementPtr != nullptr);
+        execute(*statementPtr);
     }
-
-    environment = std::move(previous);
 }
 
 std::any Interpreter::evaluate(const Expr& expr)
@@ -348,6 +343,16 @@ std::any Interpreter::visitPrintStmt(const PrintStmt& stmt)
     return {};
 }
 
+std::any Interpreter::visitReturnStmt(const ReturnStmt& stmt)
+{
+    std::any value;
+    if (stmt.hasValue()) {
+        value = evaluate(stmt.getValue());
+    }
+
+    throw ReturnException(value);
+}
+
 std::any Interpreter::visitVarStmt(const VarStmt& stmt)
 {
     std::any value;
@@ -366,6 +371,22 @@ std::any Interpreter::visitWhileStmt(const WhileStmt& stmt)
         execute(stmt.getBody());
     }
     return {};
+}
+
+// This simulates "finally" keyword usage in executeBlock of Java version
+// "execute" can throw "ReturnException" and we need to unwind the stack
+// and return to previous enviroment on each scope exit
+Interpreter::EnterEnviromentGuard::EnterEnviromentGuard(Interpreter& i,
+                                                        std::unique_ptr<Environment> env) :
+    i(i)
+{
+    previous = std::move(i.environment);
+    i.environment = std::move(env);
+}
+
+Interpreter::EnterEnviromentGuard::~EnterEnviromentGuard()
+{
+    i.environment = std::move(previous);
 }
 
 } // end of namespace Lox

@@ -16,9 +16,9 @@ public:
     FunctionStmt(Token name, std::vector<Token> params, std::vector<std::unique_ptr<Stmt>> body);
     std::any accept(StmtVisitor<std::any>& visitor) const override;
 
-    const Token& getName() const;
-    const std::vector<Token>& getParams() const;
-    const std::vector<std::unique_ptr<Stmt>>& getBody() const;
+    const Token& getName() const { return name; };
+    const std::vector<Token>& getParams() const { return params; }
+    const std::vector<std::unique_ptr<Stmt>>& getBody() const { return body; }
 
 private:
     Token name;

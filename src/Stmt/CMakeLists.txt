@@ -5,6 +5,7 @@ target_sources(lox
     IfStmt.cpp
     FunctionStmt.cpp
     PrintStmt.cpp
+    ReturnStmt.cpp
     VarStmt.cpp
     WhileStmt.cpp
 )
