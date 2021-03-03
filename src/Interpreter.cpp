@@ -16,6 +16,7 @@
 
 #include "lox/Stmt/BlockStmt.h"
 #include "lox/Stmt/ExpressionStmt.h"
+#include "lox/Stmt/FunctionStmt.h"
 #include "lox/Stmt/IfStmt.h"
 #include "lox/Stmt/PrintStmt.h"
 #include "lox/Stmt/VarStmt.h"
@@ -25,6 +26,7 @@
 #include <cassert>
 #include <cmath>
 #include <ctime>
+#include <memory>
 #include <ostream>
 
 #include <fmt/ostream.h>
@@ -67,7 +69,8 @@ std::any clock(Interpreter&, const std::vector<std::any>&)
     return static_cast<double>(t);
 }
 
-Interpreter::Interpreter(std::ostream& out) : out(out), globals(std::make_unique<Environment>())
+Interpreter::Interpreter(std::ostream& out) :
+    out(out), globals(std::make_unique<Environment>()), globalEnvironment(globals.get())
 {
     globals->define("clock", Callable{0, &clock});
     environment = std::move(globals);
@@ -85,6 +88,12 @@ void Interpreter::intepret(const std::vector<std::unique_ptr<Stmt>>& statements)
     } catch (RuntimeError error) {
         Lox::ReportRuntimeError(error);
     }
+}
+
+Environment& Interpreter::getGlobalsEnvironment()
+{
+    assert(globalEnvironment);
+    return *globalEnvironment;
 }
 
 void Interpreter::execute(const Stmt& stmt)
@@ -323,6 +332,12 @@ std::any Interpreter::visitIfStmt(const IfStmt& stmt)
             execute(stmt.getElseBranch());
         }
     }
+    return {};
+}
+
+std::any Interpreter::visitFunctionStmt(const FunctionStmt& stmt)
+{
+    environment->define(stmt.getName().getText(), Callable(&stmt));
     return {};
 }
 

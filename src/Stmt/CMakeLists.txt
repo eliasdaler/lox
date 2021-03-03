@@ -3,6 +3,7 @@ target_sources(lox
     BlockStmt.cpp
     ExpressionStmt.cpp
     IfStmt.cpp
+    FunctionStmt.cpp
     PrintStmt.cpp
     VarStmt.cpp
     WhileStmt.cpp

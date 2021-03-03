@@ -27,6 +27,7 @@ class Stmt;
 class BlockStmt;
 class ExpressionStmt;
 class IfStmt;
+class FunctionStmt;
 class PrintStmt;
 class VarStmt;
 class WhileStmt;
@@ -37,12 +38,14 @@ public:
     ~Interpreter(); // for forward declaration of Environment
     void intepret(const std::vector<std::unique_ptr<Stmt>>& statements);
 
-private:
+    Environment& getGlobalsEnvironment();
+
     void execute(const Stmt& stmt);
     void executeBlock(const std::vector<std::unique_ptr<Stmt>>& statements,
                       std::unique_ptr<Environment> env);
     std::any evaluate(const Expr& expr);
 
+private:
     bool isTruthy(const std::any& object) const;
     bool isEqual(const std::any& left, const std::any& right) const;
 
@@ -61,12 +64,14 @@ private:
     std::any visitBlockStmt(const BlockStmt& stmt) override;
     std::any visitExpressionStmt(const ExpressionStmt& stmt) override;
     std::any visitIfStmt(const IfStmt& stmt) override;
+    std::any visitFunctionStmt(const FunctionStmt& stmt) override;
     std::any visitPrintStmt(const PrintStmt& stmt) override;
     std::any visitVarStmt(const VarStmt& stmt) override;
     std::any visitWhileStmt(const WhileStmt& stmt) override;
 
     // data
     std::unique_ptr<Environment> globals;
+    Environment* globalEnvironment;
     std::unique_ptr<Environment> environment; // current environment
     std::ostream& out;
 };

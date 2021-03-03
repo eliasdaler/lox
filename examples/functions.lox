@@ -1,0 +1,19 @@
+fun sayHi(first, last) {
+    print "Hi, " + first + " " + last + "!";
+}
+
+fun printCurrentTime() {
+    print "Current Unix Time is...";
+    print clock();
+}
+
+fun main() {
+    var name = "Elias";
+    var surname = "Daler";
+
+    sayHi(name, surname);
+    printCurrentTime();
+}
+
+// later it'll be called automatically
+main();

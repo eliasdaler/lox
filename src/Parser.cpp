@@ -11,6 +11,7 @@
 
 #include "lox/Stmt/BlockStmt.h"
 #include "lox/Stmt/ExpressionStmt.h"
+#include "lox/Stmt/FunctionStmt.h"
 #include "lox/Stmt/IfStmt.h"
 #include "lox/Stmt/PrintStmt.h"
 #include "lox/Stmt/VarStmt.h"
@@ -44,6 +45,11 @@ std::unique_ptr<Stmt> Parser::declaration()
 {
     // declaration → varDecl | statement ;
     try {
+        // funDecl → "fun" function ;
+        if (match(TokenType::Fun)) {
+            return function("function");
+        }
+        // varDecl → "var" varDeclaration;
         if (match(TokenType::Var)) {
             return varDeclaration();
         }
@@ -57,6 +63,7 @@ std::unique_ptr<Stmt> Parser::declaration()
 
 std::unique_ptr<Stmt> Parser::varDeclaration()
 {
+    // varDeclaration → IDENTIFIER ("=" expression)? ";";
     auto name = consume(TokenType::Identifier, "Expect variable name");
 
     std::unique_ptr<Expr> initializer;
@@ -66,6 +73,37 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
     consume(TokenType::Semicolon, "Expect ';' after variable declaration");
     return std::make_unique<VarStmt>(name, std::move(initializer));
+}
+
+std::unique_ptr<Stmt> Parser::function(const std::string& kind)
+{
+    // function → IDENTIFIER "(" parameters? ")" block ;
+    static const auto errNameMissing = fmt::format("Expect {} name", kind);
+    static const auto errLeftParenMissing = fmt::format("Expect '(' after {} name", kind);
+    static const auto errLeftBraceMissing = fmt::format("Expect '{{' after {} name", kind);
+
+    auto name = consume(TokenType::Identifier, errNameMissing.c_str());
+
+    consume(TokenType::LeftParen, errLeftParenMissing.c_str());
+
+    std::vector<Token> parameters;
+    if (!check(TokenType::RightParen)) {
+        do {
+            if (parameters.size() >= MAX_FUNCTION_ARGUMENTS) {
+                static const auto errMsg =
+                    fmt::format("Can't have more than {} arguments", MAX_FUNCTION_ARGUMENTS);
+                error(peek(), errMsg.c_str());
+            }
+
+            parameters.push_back(consume(TokenType::Identifier, "Expect parameter name"));
+        } while (match(TokenType::Comma));
+    }
+    consume(TokenType::RightParen, "Expect ')' after parameters.");
+
+    consume(TokenType::LeftBrace, errLeftBraceMissing.c_str());
+
+    auto body = block();
+    return std::make_unique<FunctionStmt>(name, std::move(parameters), std::move(body));
 }
 
 std::unique_ptr<Stmt> Parser::statement()
@@ -88,7 +126,7 @@ std::unique_ptr<Stmt> Parser::statement()
     }
 
     if (match(TokenType::LeftBrace)) {
-        return block();
+        return std::make_unique<BlockStmt>(block());
     }
 
     return expressionStatement();
@@ -190,7 +228,7 @@ std::unique_ptr<Stmt> Parser::whileStatement()
     return std::make_unique<WhileStmt>(std::move(condition), statement());
 }
 
-std::unique_ptr<Stmt> Parser::block()
+std::vector<std::unique_ptr<Stmt>> Parser::block()
 {
     // block → "{" declaration* "}" ;
     std::vector<std::unique_ptr<Stmt>> statements;
@@ -200,7 +238,7 @@ std::unique_ptr<Stmt> Parser::block()
     }
 
     consume(TokenType::RightBrace, "Expect '}' after block.");
-    return std::make_unique<BlockStmt>(std::move(statements));
+    return statements;
 }
 
 std::unique_ptr<Stmt> Parser::expressionStatement()
