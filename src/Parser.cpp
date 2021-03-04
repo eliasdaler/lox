@@ -416,7 +416,7 @@ std::unique_ptr<Expr> Parser::finishCall(std::unique_ptr<Expr> callee)
                     fmt::format("Can't have more than {} arguments", MAX_FUNCTION_ARGUMENTS);
                 error(peek(), errMsg.c_str());
             }
-            arguments.emplace_back(expression());
+            arguments.push_back(expression());
         } while (match(TokenType::Comma));
     }
 

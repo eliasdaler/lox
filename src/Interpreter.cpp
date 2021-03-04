@@ -243,7 +243,7 @@ std::any Interpreter::visitCallExpr(const CallExpr& expr)
 
     std::vector<std::any> arguments;
     for (const auto& argument : expr.getArgruments()) {
-        arguments.emplace_back(evaluate(*argument));
+        arguments.push_back(evaluate(*argument));
     }
 
     if (callee.type() != typeid(Callable)) {
