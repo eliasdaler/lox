@@ -1,9 +1,11 @@
-C++ implementation of Lox
+C++ implementation of Lox (WIP)
 =========================
 
-I'm reading [Crafring Interpreters book](http://craftinginterpreters.com/) by
+I'm reading [Crafting Interpreters book](http://craftinginterpreters.com/) by
 Bob Nystrom and writing Lox interpreter in C++ as I do this (the original code
 in the book is written in Java and some is in C). It's fun!
+
+Some day I will return to it... Maybe in another language?
 
 Chapters complete
 ---
